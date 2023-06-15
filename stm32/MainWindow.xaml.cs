@@ -67,6 +67,7 @@ namespace stm32
 
         private void SerialPort_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
+            Trace.WriteLine("Od stm");
             int bytesToRead = serialPort.BytesToRead;
             byte[] buffer = new byte[bytesToRead];
             serialPort.Read(buffer, 0, bytesToRead);
