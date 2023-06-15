@@ -7,12 +7,12 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
-        <Button x:Name="buttonLED1" Content="Button" HorizontalAlignment="Left" Margin="112,261,0,0" VerticalAlignment="Top" Height="42" Width="124" Click="buttonLED1_Click"/>
-        <Button x:Name="buttonLED2" Content="Button" HorizontalAlignment="Left" Margin="324,261,0,0" VerticalAlignment="Top" Height="42" Width="125" Click="buttonLED2_Click"/>
-        <Button x:Name="buttonLED3" Content="Button" HorizontalAlignment="Left" Margin="529,261,0,0" VerticalAlignment="Top" Height="42" Width="128" Click="buttonLED3_Click"/>
-        <Slider x:Name="sliderPWM1" HorizontalAlignment="Left" Margin="116,199,0,0" VerticalAlignment="Top" Width="120" ValueChanged="sliderPWM1_ValueChanged"/>
-        <Slider x:Name="sliderPWM2" HorizontalAlignment="Left" Margin="324,199,0,0" VerticalAlignment="Top" Width="120" ValueChanged="sliderPWM2_ValueChanged"/>
-        <Slider x:Name="sliderPWM3" HorizontalAlignment="Left" Margin="537,199,0,0" VerticalAlignment="Top" Width="120" ValueChanged="sliderPWM3_ValueChanged"/>
+        <Button x:Name="buttonLED1" Content="Button" HorizontalAlignment="Left" Margin="112,261,0,0" VerticalAlignment="Top" Height="42" Width="124" Click="ButtonLED1_Click"/>
+        <Button x:Name="buttonLED2" Content="Button" HorizontalAlignment="Left" Margin="324,261,0,0" VerticalAlignment="Top" Height="42" Width="125" Click="ButtonLED2_Click"/>
+        <Button x:Name="buttonLED3" Content="Button" HorizontalAlignment="Left" Margin="529,261,0,0" VerticalAlignment="Top" Height="42" Width="128" Click="ButtonLED3_Click"/>
+        <Slider x:Name="sliderPWM1" HorizontalAlignment="Left" Margin="116,199,0,0" VerticalAlignment="Top" Width="120" ValueChanged="SliderPWM1_ValueChanged"/>
+        <Slider x:Name="sliderPWM2" HorizontalAlignment="Left" Margin="324,199,0,0" VerticalAlignment="Top" Width="120" ValueChanged="SliderPWM2_ValueChanged"/>
+        <Slider x:Name="sliderPWM3" HorizontalAlignment="Left" Margin="537,199,0,0" VerticalAlignment="Top" Width="120" ValueChanged="SliderPWM3_ValueChanged"/>
         <Ellipse x:Name="dioda1" HorizontalAlignment="Left" Height="48" Margin="148,94,0,0" Stroke="Black" VerticalAlignment="Top" Width="52"/>
         <Ellipse x:Name="dioda2" HorizontalAlignment="Left" Height="48" Margin="358,94,0,0" Stroke="Black" VerticalAlignment="Top" Width="52"/>
         <Ellipse x:Name="dioda3" HorizontalAlignment="Left" Height="48" Margin="571,94,0,0" Stroke="Black" VerticalAlignment="Top" Width="52"/>
