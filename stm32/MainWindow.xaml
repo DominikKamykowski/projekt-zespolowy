@@ -13,6 +13,7 @@
         <Slider x:Name="sliderPWM1" HorizontalAlignment="Left" Margin="116,199,0,0" VerticalAlignment="Top" Width="120"/>
         <Slider x:Name="sliderPWM2" HorizontalAlignment="Left" Margin="324,199,0,0" VerticalAlignment="Top" Width="120"/>
         <Slider x:Name="sliderPWM3" HorizontalAlignment="Left" Margin="537,199,0,0" VerticalAlignment="Top" Width="120"/>
+        <Button Content="Button" HorizontalAlignment="Left" Margin="593,76,0,0" VerticalAlignment="Top" Click="Button_Click_1"/>
 
 
     </Grid>
