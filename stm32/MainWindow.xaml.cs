@@ -25,7 +25,7 @@ namespace stm32
             Trace.WriteLine("GUI");
         }
 
-        byte Calc_CRC_8(byte[] DataArray, int Length)
+        static byte Calc_CRC_8(byte[] DataArray, int Length)
         {
             int i;
             byte CRC;
@@ -38,7 +38,7 @@ namespace stm32
             return CRC;
         }
 
-        private readonly byte[] CRC_8_TABLE =
+        private static readonly byte[] CRC_8_TABLE =
                {
             0x00, 0x07, 0x0e, 0x09, 0x1c, 0x1b, 0x12, 0x15, 0x38, 0x3f, 0x36, 0x31,
             0x24, 0x23, 0x2a, 0x2d, 0x70, 0x77, 0x7e, 0x79, 0x6c, 0x6b, 0x62, 0x65,
@@ -65,20 +65,8 @@ namespace stm32
         };
 
 
-
-        private static byte CalculateCRC(byte[] message)
-        {
-            byte crc = 0;
-            for (int i = 0; i < message.Length - 1; i++)
-            {
-                crc ^= message[i];
-            }
-            return crc;
-        }
-
         private void SerialPort_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
-            Trace.WriteLine("Od stm");
             int bytesToRead = serialPort.BytesToRead;
             byte[] buffer = new byte[bytesToRead];
             serialPort.Read(buffer, 0, bytesToRead);
@@ -94,7 +82,7 @@ namespace stm32
                 byte pwm3Value = buffer[7];
                 bool buttonState = buffer[8] == 0x01;
                 byte receivedCRC = buffer[9];
-                byte calculatedCRC = CalculateCRC(buffer);
+                byte calculatedCRC = Calc_CRC_8(buffer, buffer.Length -1);
 
                 if (receivedCRC == calculatedCRC)
                 {
@@ -111,28 +99,30 @@ namespace stm32
                         // Obsługa stanu naciśnięcia przycisku
                         if (buttonState)
                         {
-                            MessageBox.Show("Przycisk został naciśnięty");
+                            // kontrolka w gui z komunikatem. Nie messagebox bo przy kilku błędach na raz nie da się nic zrobić już na kompie xD
                         }
                         else
                         {
-                            MessageBox.Show("Przycisk nie jest naciśnięty");
+                            // dioda w gui że przycisk naciśnięty
                         }
                     });
                 }
                 else
                 {
-                    MessageBox.Show("Błąd sumy kontrolnej");
+                    //kontrolka w gui z komunikatem.
                 }
             }
             else
             {
-                MessageBox.Show("Błędny format wiadomości");
+                //kontrolka w gui z komunikatem.
             }
         }
 
         private void buttonLED1_Click(object sender, RoutedEventArgs e)
         {
             byte[] message = CreateMessage(1, true, 255); // Tworzenie wiadomości dla LED1
+            // Samo createmessage spoko, ale dajesz cały czas te same wartosci wiec nie dziala.
+            //CreateMessage(1) jest ok. Z resztą argumentów jest źle.
             SendSerialMessage(message); // Wysyłanie wiadomości
 
             if (dioda1.Fill is SolidColorBrush brush && brush.Color == Colors.Red)
@@ -148,6 +138,8 @@ namespace stm32
         private void buttonLED2_Click(object sender, RoutedEventArgs e)
         {
             byte[] message = CreateMessage(2, true, 128); // Tworzenie wiadomości dla LED2
+                                                          // Samo createmessage spoko, ale dajesz cały czas te same wartosci wiec nie dziala.
+                                                          //CreateMessage(2) jest ok. Z resztą argumentów jest źle.
             SendSerialMessage(message); // Wysyłanie wiadomości
 
             if (dioda2.Fill is SolidColorBrush brush && brush.Color == Colors.Green)
@@ -163,6 +155,8 @@ namespace stm32
         private void buttonLED3_Click(object sender, RoutedEventArgs e)
         {
             byte[] message = CreateMessage(3, false, 0); // Tworzenie wiadomości dla LED3
+                                                         // Samo createmessage spoko, ale dajesz cały czas te same wartosci wiec nie dziala.
+                                                         //CreateMessage(3) jest ok. Z resztą argumentów jest źle.
             SendSerialMessage(message); // Wysyłanie wiadomości
 
             if (dioda3.Fill is SolidColorBrush brush && brush.Color == Colors.Blue)
@@ -175,58 +169,27 @@ namespace stm32
             }
         }
 
-        private static byte[] CreateMessage(int ledNumber, bool ledState, int pwmValue)
+        private byte[] CreateMessage(int ledNumber, bool ledState, int pwmValue)
         {
+            //ledState i pwmValue do wywalenia.
             byte[] message = new byte[9];
             message[0] = 0x60;
             message[1] = 0x60;
-            message[2] = Convert.ToByte(ledNumber == 1 && ledState);
-            message[3] = Convert.ToByte(ledNumber == 2 && ledState);
-            message[4] = Convert.ToByte(ledNumber == 3 && ledState);
-            message[5] = Convert.ToByte(pwmValue);
-            message[6] = Convert.ToByte(pwmValue);
-            message[7] = Convert.ToByte(pwmValue);
-            message[8] = CalculateCRC(message);
+            message[2] = // checkbox w gui. Jesli zaznaczony to 0x01, jesli nie to 0x00
+            message[3] = // checkbox w gui. Jesli zaznaczony to 0x01, jesli nie to 0x00
+            message[4] = // checkbox w gui. Jesli zaznaczony to 0x01, jesli nie to 0x00
+            message[5] = (byte)sliderPWM1.Value; // Wartosc max slidera po prostu daj 254 wszedzie i nie trzeba obliczen
+            message[6] = (byte)sliderPWM2.Value; 
+            message[7] = (byte)sliderPWM3.Value; 
+            message[8] = Calc_CRC_8(message, message.Length -1);
             return message;
         }
 
         private void SendSerialMessage(byte[] message)
         {
-            Trace.WriteLine(message[8]);
             serialPort.Write(message, 0, message.Length);
         }
 
-        private void sliderPWM1_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
-        {
-            int pwmValue = (int)sliderPWM1.Value; // Pobranie wartości z slidu PWM1
-            byte[] message = CreateMessage(1, false, pwmValue); // Tworzenie wiadomości dla PWM1
-            SendSerialMessage(message); // Wysyłanie wiadomości
 
-            double value = sliderPWM1.Value;
-            byte intensity = (byte)(value * 255 / 100); // Przeliczenie wartości suwaka na wartość intensywności (0-255)
-            dioda1.Fill = new SolidColorBrush(Color.FromRgb(intensity, 0, 0));
-        }
-
-        private void sliderPWM2_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
-        {
-            int pwmValue = (int)sliderPWM2.Value; // Pobranie wartości z slidu PWM2
-            byte[] message = CreateMessage(2, false, pwmValue); // Tworzenie wiadomości dla PWM2
-            SendSerialMessage(message); // Wysyłanie wiadomości
-
-            double value = sliderPWM2.Value;
-            byte intensity = (byte)(value * 255 / 100); // Przeliczenie wartości suwaka na wartość intensywności (0-255)
-            dioda2.Fill = new SolidColorBrush(Color.FromRgb(0, intensity, 0));
-        }
-
-        private void sliderPWM3_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
-        {
-            int pwmValue = (int)sliderPWM3.Value; // Pobranie wartości z slidu PWM3
-            byte[] message = CreateMessage(3, false, pwmValue); // Tworzenie wiadomości dla PWM3
-            SendSerialMessage(message); // Wysyłanie wiadomości
-
-            double value = sliderPWM3.Value;
-            byte intensity = (byte)(value * 255 / 100); // Przeliczenie wartości suwaka na wartość intensywności (0-255)
-            dioda3.Fill = new SolidColorBrush(Color.FromRgb(0, 0, intensity));
-        }
     }
 }
