@@ -4,6 +4,8 @@ using System.IO.Ports;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using System.Windows.Threading;
+using System.Threading;
 
 namespace stm32
 {
@@ -14,11 +16,12 @@ namespace stm32
         public MainWindow()
         {
             InitializeComponent();
-            Loaded += MainWindow_Loaded;
         }
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
+            Loaded += MainWindow_Loaded;
+
             serialPort = new SerialPort("COM5", 115200, Parity.None, 8, StopBits.One);
             serialPort.DataReceived += SerialPort_DataReceived;
             serialPort.Open();
@@ -130,14 +133,18 @@ namespace stm32
 
         private void ButtonLED1_Click(object sender, RoutedEventArgs e)
         {
-            Trace.WriteLine("test");
             byte[] message = new byte[9];
             message[0] = 0x60;
             message[1] = 0x60;
             message[2] = 0x01;
-            message[3] = 0x01;
-            message[4] = 0x01;
-            message[5] = 0xFF;
+
+            // Ustawianie koloru diody 1 na podstawie wartości slidera PWM1
+            byte pwm1Value = (byte)sliderPWM1.Value;
+            message[3] = pwm1Value; // R
+            message[4] = pwm1Value; // G
+            message[5] = pwm1Value; // B
+
+            // Wysyłanie danych do mikrokontrolera
             message[6] = 0xFF;
             message[7] = 0xFF;
             message[8] = CalculateCRC(message);
@@ -145,19 +152,22 @@ namespace stm32
             // Wysyłanie wiadomości
             Trace.WriteLine(message[8]);
             serialPort.Write(message, 0, message.Length);
-            //}
         }
 
         private void ButtonLED2_Click(object sender, RoutedEventArgs e)
         {
-            Trace.WriteLine("test");
             byte[] message = new byte[9];
             message[0] = 0x60;
             message[1] = 0x60;
             message[2] = 0x01;
-            message[3] = 0x01;
-            message[4] = 0x01;
-            message[5] = 0xFF;
+
+            // Ustawianie koloru diody 2 na podstawie wartości slidera PWM2
+            byte pwm2Value = (byte)sliderPWM2.Value;
+            message[3] = pwm2Value; // R
+            message[4] = pwm2Value; // G
+            message[5] = pwm2Value; // B
+
+            // Wysyłanie danych do mikrokontrolera
             message[6] = 0xFF;
             message[7] = 0xFF;
             message[8] = CalculateCRC(message);
@@ -169,14 +179,85 @@ namespace stm32
 
         private void ButtonLED3_Click(object sender, RoutedEventArgs e)
         {
-            Trace.WriteLine("test");
             byte[] message = new byte[9];
             message[0] = 0x60;
             message[1] = 0x60;
             message[2] = 0x01;
-            message[3] = 0x01;
-            message[4] = 0x01;
-            message[5] = 0xFF;
+
+            // Ustawianie koloru diody 3 na podstawie wartości slidera PWM3
+            byte pwm3Value = (byte)sliderPWM3.Value;
+            message[3] = pwm3Value; // R
+            message[4] = pwm3Value; // G
+            message[5] = pwm3Value; // B
+
+            // Wysyłanie danych do mikrokontrolera
+            message[6] = 0xFF;
+            message[7] = 0xFF;
+            message[8] = CalculateCRC(message);
+
+            // Wysyłanie wiadomości
+            Trace.WriteLine(message[8]);
+            serialPort.Write(message, 0, message.Length);
+        }
+
+        private void SliderPWM1_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            byte pwm1Value = (byte)sliderPWM1.Value;
+
+            // Aktualizacja koloru diody 1 na podstawie wartości slidera PWM1
+            byte[] message = new byte[9];
+            message[0] = 0x60;
+            message[1] = 0x60;
+            message[2] = 0x01;
+            message[3] = pwm1Value; // R
+            message[4] = 0x00;     // G
+            message[5] = 0x00;     // B
+            message[6] = 0xFF;
+            message[7] = 0xFF;
+            message[8] = CalculateCRC(message);
+
+            // Wysyłanie wiadomości
+            Trace.WriteLine(message[8]);
+            serialPort.Write(message, 0, message.Length);
+        }
+
+        private void SliderPWM2_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            byte[] message = new byte[9];
+            message[0] = 0x60;
+            message[1] = 0x60;
+            message[2] = 0x02; // Numer diody (2)
+
+            // Ustawianie koloru diody 2 na podstawie wartości slidera PWM2
+            byte pwm2Value = (byte)sliderPWM2.Value;
+            message[3] = pwm2Value; // R
+            message[4] = pwm2Value; // G
+            message[5] = pwm2Value; // B
+
+            // Wysyłanie danych do mikrokontrolera
+            message[6] = 0xFF;
+            message[7] = 0xFF;
+            message[8] = CalculateCRC(message);
+
+            // Wysyłanie wiadomości
+            Trace.WriteLine(message[8]);
+            serialPort.Write(message, 0, message.Length);
+        }
+
+        private void SliderPWM3_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            byte[] message = new byte[9];
+            message[0] = 0x60;
+            message[1] = 0x60;
+            message[2] = 0x03; // Numer diody (3)
+
+            // Ustawianie koloru diody 3 na podstawie wartości slidera PWM3
+            byte pwm3Value = (byte)sliderPWM3.Value;
+            message[3] = pwm3Value; // R
+            message[4] = pwm3Value; // G
+            message[5] = pwm3Value; // B
+
+            // Wysyłanie danych do mikrokontrolera
             message[6] = 0xFF;
             message[7] = 0xFF;
             message[8] = CalculateCRC(message);
