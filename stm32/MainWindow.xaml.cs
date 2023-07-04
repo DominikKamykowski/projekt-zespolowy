@@ -22,7 +22,7 @@ namespace stm32
             Trace.WriteLine("GUI");
         }
 
-        byte Calc_CRC_8(byte[] DataArray, int Length)
+        static byte Calc_CRC_8(byte[] DataArray, int Length)
         {
             int i;
             byte CRC;
@@ -89,7 +89,7 @@ namespace stm32
                 byte pwm3Value = buffer[7];
                 bool buttonState = buffer[8] == 0x01;
                 byte receivedCRC = buffer[9];
-                byte calculatedCRC = CalculateCRC(buffer);
+                byte calculatedCRC = Calc_CRC_8(buffer, buffer.Length -1);
 
                 if (receivedCRC == calculatedCRC)
                 {
@@ -108,17 +108,20 @@ namespace stm32
                         else
                         {
                             // Przycisk nie jest naciśnięty
+
                         }
                     });
                 }
                 else
                 {
                     // Błąd sumy kontrolnej
+
                 }
             }
             else
             {
                 // Błędny format wiadomości
+
             }
         }
 
